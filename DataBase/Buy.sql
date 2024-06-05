@@ -1,0 +1,13 @@
+USE DBAndreVeiculos
+GO
+
+CREATE TABLE Buy
+(
+    Id INT IDENTITY(1,1) NOT NULL,
+    CarPlate VARCHAR(10) NOT NULL,
+    Price REAL NOT NULL,
+    BuyDate DATE NOT NULL,
+    CONSTRAINT PK_Buy PRIMARY KEY (Id),
+    CONSTRAINT FK_Buy_Car FOREIGN KEY (CarPlate) REFERENCES Car(Plate)
+)
+GO   

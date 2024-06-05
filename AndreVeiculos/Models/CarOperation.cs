@@ -11,5 +11,6 @@ namespace Models
         public int Id { get; set; }
         public Car Car { get; set; }
         public Operation Operation { get; set; }
+        public bool IsDone { get; set; }
     }
 }
