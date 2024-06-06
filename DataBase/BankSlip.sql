@@ -1,0 +1,11 @@
+USE DBAndreVeiculos
+GO
+
+CREATE TABLE BankSlip
+(
+    Id INT IDENTITY(1,1) NOT NULL,
+    Number VARCHAR(30) NOT NULL,
+    ExpirationDate DATE NOT NULL,
+    CONSTRAINT PK_BankSlip PRIMARY KEY (Id)
+)
+GO

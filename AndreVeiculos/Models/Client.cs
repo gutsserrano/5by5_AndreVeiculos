@@ -10,6 +10,6 @@ namespace Models
     public class Client : Person
     {
         public Decimal Income { get; set; }
-        public string Document { get; set; }
+        public string DocumentPdf { get; set; }
     }
 }
