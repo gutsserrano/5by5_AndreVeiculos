@@ -7,7 +7,22 @@ namespace AndreVeiculos
     {
         static void Main(string[] args)
         {
-            MenuInsertCar();
+                // ** Inserindo Operação **
+            //new OperationController().Insert(new List<Operation>() { new Operation() { Description = "Inserção de carro" } });
+
+                // ** Inserindo Carro **
+            //MenuInsertCar();
+
+                // ** Inserindo Operação de Carro **
+            /*List<Car> cars = new List<Car>();
+            cars = new CarController().GetAll();
+            List<Operation> operations = new List<Operation>();
+            operations = new OperationController().GetAll();
+            new CarOperationController().Insert(cars[0], operations[0]);*/
+
+                // ** Listando Operações de Carro **
+            /*var List = new CarOperationController().GetAll();
+            Console.ReadKey();*/
         }
 
         static void MenuInsertCar()
