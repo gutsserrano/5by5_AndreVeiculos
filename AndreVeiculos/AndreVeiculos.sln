@@ -3,15 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AndreVeiculos", "AndreVeiculos\AndreVeiculos.csproj", "{4D96F3BE-4903-486F-83A0-525F3E506209}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AndreVeiculos", "AndreVeiculos\AndreVeiculos.csproj", "{4D96F3BE-4903-486F-83A0-525F3E506209}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{9F1868D4-C405-4F88-A58B-9554C63F8475}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "Models\Models.csproj", "{9F1868D4-C405-4F88-A58B-9554C63F8475}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controllers", "Controllers\Controllers.csproj", "{17BDCE19-D607-412F-8625-9FE2833DF7FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Controllers", "Controllers\Controllers.csproj", "{17BDCE19-D607-412F-8625-9FE2833DF7FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{B1798BCF-5620-4262-B03C-3288844303DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Services.csproj", "{B1798BCF-5620-4262-B03C-3288844303DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repositories", "Repositories\Repositories.csproj", "{CD82C9C9-25F2-4929-B6E3-4F9396903C4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repositories", "Repositories\Repositories.csproj", "{CD82C9C9-25F2-4929-B6E3-4F9396903C4E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjAPICarro", "ProjAPICarro\ProjAPICarro.csproj", "{66DBC9A8-1A42-467D-8092-6A203413AD45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{CD82C9C9-25F2-4929-B6E3-4F9396903C4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD82C9C9-25F2-4929-B6E3-4F9396903C4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD82C9C9-25F2-4929-B6E3-4F9396903C4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66DBC9A8-1A42-467D-8092-6A203413AD45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66DBC9A8-1A42-467D-8092-6A203413AD45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66DBC9A8-1A42-467D-8092-6A203413AD45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66DBC9A8-1A42-467D-8092-6A203413AD45}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
