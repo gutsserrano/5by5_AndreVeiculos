@@ -8,6 +8,9 @@ namespace Models
 {
     public class Car
     {
+        public static readonly string GETALL = "SELECT Plate, Name, ModelYear, ManufactureYear, Color, Sold FROM Car";
+        public static readonly string INSERT = "INSERT INTO Car (Plate, Name, ModelYear, ManufactureYear, Color, Sold) VALUES (@Plate, @Name, @ModelYear, @ManufactureYear, @Color ,@Sold)";
+
         public string Plate { get; set; }
         public string Name { get; set; }
         public int ModelYear { get; set; }
