@@ -15,7 +15,7 @@ namespace Repositories
 
         public GenericRepository()
         {
-            _conn = ConfigurationManager.ConnectionStrings["StringConnection"].ConnectionString;
+            _conn = "Data Source=127.0.0.1; Initial Catalog=DBAndreVeiculosFramework; User Id=sa; Password=SqlServer2019!; TrustServerCertificate=Yes";
         }
 
         public bool Insert(string query, object obj)
@@ -43,6 +43,38 @@ namespace Repositories
                 var list = db.Query<T>(query);
                 return (List<T>)list;
             }
+        }
+
+        public bool Update(string query, object obj)
+        {
+            int result;
+
+            using (var db = new SqlConnection(_conn))
+            {
+                db.Open();
+
+                result = db.Execute(query, obj);
+
+                db.Close();
+            }
+
+            return result > 0;
+        }
+
+        public bool Delete(string query, object obj)
+        {
+            int result;
+
+            using (var db = new SqlConnection(_conn))
+            {
+                db.Open();
+
+                result = db.Execute(query, obj);
+
+                db.Close();
+            }
+
+            return result > 0;
         }
     }
 }

@@ -26,5 +26,20 @@ namespace Services
         {
             return _genericRepository.GetAll<Operation>(Operation.GETALL);
         }
+
+        public Operation? Get(int id)
+        {
+            return GetAll().Find(o => o.Id == id);
+        }
+
+        public bool Update(int id, Operation operation)
+        {
+            return _genericRepository.Update(Operation.UPDATE, operation);
+        }
+
+        public bool Delete(int id)
+        {
+            return _genericRepository.Delete(Operation.DELETE, new { Id = id });
+        }
     }
 }

@@ -22,9 +22,21 @@ namespace Services
             return _genericRepository.GetAll<Car>(Car.GETALL);
         }
 
-        public Car GetByPlate(string plate)
+        public Car? Get(string plate)
         {
-            return new Car();
+            return GetAll().Find(c => c.Plate == plate);
+        }
+
+        public bool Update(string plate, Car car)
+        {
+            //return _genericRepository.Insert(Car.UPDATE, car);
+            return false;
+        }
+
+        public bool Delete(string plate)
+        {
+            //return _genericRepository.Delete(Car.DELETE, new { Plate = plate });
+            return false;
         }
     }
 }
