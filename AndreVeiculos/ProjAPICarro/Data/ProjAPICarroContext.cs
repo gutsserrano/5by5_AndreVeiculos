@@ -20,6 +20,13 @@ namespace ProjAPICarro.Data
         public DbSet<Models.Person>? People { get; set; } = default!;
         public DbSet<Models.Client>? Clients { get; set; } = default!;
         public DbSet<Models.Employee>? Employees { get; set; } = default!;
+        public DbSet<Models.Buy>? Buys { get; set; } = default!;
+        public DbSet<Models.Card>? Card { get; set; } = default!;
+        public DbSet<Models.BankSlip>? BankSlips { get; set; } = default!;
+        public DbSet<Models.Pix>? Pixes { get; set; } = default!;
+        public DbSet<Models.PixType>? PixTypes { get; set; } = default!;
+        public DbSet<Models.Payment>? Payments { get; set; } = default!;
+        public DbSet<Models.Sell>? Sells { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -42,6 +49,13 @@ namespace ProjAPICarro.Data
             modelBuilder.Entity<CarOperation>()
                 .HasOne<Operation>()
                 .WithMany();
+
+            modelBuilder.Entity<Pix>()
+                .HasOne<PixType>()
+                .WithMany();
+
+            
+                
 
         }
     }

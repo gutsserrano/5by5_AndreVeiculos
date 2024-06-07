@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Models
+namespace Models.DTO
 {
-    public class BankSlip
+    public class PixDTO
     {
         public int Id { get; set; }
-        public int Number { get; set; }
-        public DateTime ExpirationDate { get; set; }
+        public int PixTypeId { get; set; }
+        public string PixKey { get; set; }
     }
 }

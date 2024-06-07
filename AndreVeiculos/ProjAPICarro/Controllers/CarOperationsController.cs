@@ -41,7 +41,7 @@ namespace ProjAPICarro.Controllers
           {
               return NotFound();
           }
-            var carOperation = await _context.CarOperations.Include(c => c.Car).Include(o => o.Operation).Where(cp => cp.Id == id).FirstOrDefaultAsync();
+            var carOperation = await _context.CarOperations.Include(c => c.Car).Include(o => o.Operation).Where(cp => cp.Id == id).SingleOrDefaultAsync(c => c.Id == id);
 
             if (carOperation == null)
             {
@@ -87,11 +87,6 @@ namespace ProjAPICarro.Controllers
         [HttpPost]
         public async Task<ActionResult<CarOperation>> PostCarOperation(CarOperationDTO carOperationDTO)
         {
-            /*if (_context.CarOperations == null)
-            {
-                return Problem("Entity set 'ProjAPICarroContext.CarOperations'  is null.");
-            }*/
-
             CarOperation carOp = new(carOperationDTO);
             carOp.Car = await _context.Car.FindAsync(carOp.Car.Plate);
             carOp.Operation = await _context.Operations.FindAsync(carOp.Operation.Id);
