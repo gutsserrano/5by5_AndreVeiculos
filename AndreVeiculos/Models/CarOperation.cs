@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Models.DTO;
 
 namespace Models
 {
@@ -19,5 +21,19 @@ namespace Models
         public Car Car { get; set; }
         public Operation Operation { get; set; }
         public bool IsDone { get; set; }
+
+        public CarOperation()
+        {
+            
+        }
+
+        public CarOperation(CarOperationDTO cod)
+        {
+            Car car = new Car { Plate = cod.CarPlate };
+            Operation op = new Operation { Id = cod.operationId };
+            this.Car = car;
+            this.Operation = op;
+            this.IsDone = cod.IsDone;
+        }
     }
 }

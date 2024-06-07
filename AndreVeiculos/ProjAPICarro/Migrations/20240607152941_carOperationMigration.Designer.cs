@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjAPICarro.Data;
 
@@ -11,9 +12,10 @@ using ProjAPICarro.Data;
 namespace ProjAPICarro.Migrations
 {
     [DbContext(typeof(ProjAPICarroContext))]
-    partial class ProjAPICarroContextModelSnapshot : ModelSnapshot
+    [Migration("20240607152941_carOperationMigration")]
+    partial class carOperationMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjAPICarro.Data;
 
@@ -11,9 +12,10 @@ using ProjAPICarro.Data;
 namespace ProjAPICarro.Migrations
 {
     [DbContext(typeof(ProjAPICarroContext))]
-    partial class ProjAPICarroContextModelSnapshot : ModelSnapshot
+    [Migration("20240607143454_employeesMigration")]
+    partial class employeesMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -93,59 +95,6 @@ namespace ProjAPICarro.Migrations
                     b.ToTable("Car");
                 });
 
-            modelBuilder.Entity("Models.CarOperation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("CarPlate")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("CarPlate1")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("IsDone")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("OperationId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("OperationId1")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CarPlate");
-
-                    b.HasIndex("CarPlate1");
-
-                    b.HasIndex("OperationId");
-
-                    b.HasIndex("OperationId1");
-
-                    b.ToTable("CarOperations");
-                });
-
-            modelBuilder.Entity("Models.Operation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Operations");
-                });
-
             modelBuilder.Entity("Models.Person", b =>
                 {
                     b.Property<string>("Document")
@@ -223,31 +172,6 @@ namespace ProjAPICarro.Migrations
                     b.HasIndex("PositionId");
 
                     b.ToTable("Employee", (string)null);
-                });
-
-            modelBuilder.Entity("Models.CarOperation", b =>
-                {
-                    b.HasOne("Models.Car", "Car")
-                        .WithMany()
-                        .HasForeignKey("CarPlate");
-
-                    b.HasOne("Models.Car", null)
-                        .WithMany()
-                        .HasForeignKey("CarPlate1");
-
-                    b.HasOne("Models.Operation", "Operation")
-                        .WithMany()
-                        .HasForeignKey("OperationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Models.Operation", null)
-                        .WithMany()
-                        .HasForeignKey("OperationId1");
-
-                    b.Navigation("Car");
-
-                    b.Navigation("Operation");
                 });
 
             modelBuilder.Entity("Models.Person", b =>

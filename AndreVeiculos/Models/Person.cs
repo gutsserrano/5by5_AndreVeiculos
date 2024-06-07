@@ -10,7 +10,7 @@ namespace Models
     {
         public string Document { get; set; }
         public string Name { get; set; }
-        public DateOnly BirthDate { get; set; }
+        public DateTime BirthDate { get; set; }
         public Address Address { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
