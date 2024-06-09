@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Models;
 using Models.DTO;
 using ProjAPICarro.Data;
+using Services;
 
 namespace ProjAPICarro.Controllers
 {
@@ -23,32 +24,56 @@ namespace ProjAPICarro.Controllers
         }
 
         // GET: api/Buys
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Buy>>> GetBuys()
+        [HttpGet("{type}")]
+        public async Task<ActionResult<IEnumerable<Buy>>> GetBuys(string type)
         {
-          if (_context.Buys == null)
-          {
-              return NotFound();
-          }
-            return await _context.Buys.Include(c => c.Car).ToListAsync();
+            if(type == "framework")
+            {
+                if (_context.Buys == null)
+                {
+                    return NotFound();
+                }
+                return await _context.Buys.Include(c => c.Car).ToListAsync();
+            }
+            else if (type == "dapper")
+            {
+                BuyService buyService = new();
+                return buyService.GetAll();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         // GET: api/Buys/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Buy>> GetBuy(int id)
+        [HttpGet("{type}/{id}")]
+        public async Task<ActionResult<Buy>> GetBuy(string type, int id)
         {
-          if (_context.Buys == null)
-          {
-              return NotFound();
-          }
-            var buy = await _context.Buys.Include(c => c.Car).FirstOrDefaultAsync();
-
-            if (buy == null)
+            if(type == "framework"  )
             {
-                return NotFound();
-            }
+                if (_context.Buys == null)
+                {
+                    return NotFound();
+                }
+                var buy = await _context.Buys.Include(c => c.Car).FirstOrDefaultAsync(c => c.Id == id);
 
-            return buy;
+                if (buy == null)
+                {
+                    return NotFound();
+                }
+
+                return buy;
+            }
+            else if (type == "dapper")
+            {
+                BuyService buyService = new();
+                return buyService.Get(id);
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         // PUT: api/Buys/5
@@ -84,25 +109,35 @@ namespace ProjAPICarro.Controllers
 
         // POST: api/Buys
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Buy>> PostBuy(BuyDTO buyDTO)
+        [HttpPost("{type}")]
+        public async Task<ActionResult<Buy>> PostBuy(string type, BuyDTO buyDTO)
         {
-            /*if (_context.Buys == null)
+            if (type == "framework")
             {
-                return Problem("Entity set 'ProjAPICarroContext.Buys'  is null.");
-            }*/
+                Buy buy = new(buyDTO);
+                buy.Car = await _context.Car.FindAsync(buy.Car.Plate);
 
-            /*CarOperation carOp = new(carOperationDTO);
-            carOp.Car = await _context.Car.FindAsync(carOp.Car.Plate);
-            carOp.Operation = await _context.Operations.FindAsync(carOp.Operation.Id);*/
+                _context.Buys.Add(buy);
+                await _context.SaveChangesAsync();
 
-            Buy buy = new(buyDTO);
-            buy.Car = await _context.Car.FindAsync(buy.Car.Plate);
-
-            _context.Buys.Add(buy);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetBuy", new { id = buy.Id }, buy);
+                return CreatedAtAction("GetBuy", new { id = buy.Id }, buy);
+            }
+            else if(type == "dapper")
+            {
+                BuyService buyService = new();
+                if(buyService.Insert(new Buy(buyDTO)))
+                {
+                    return CreatedAtAction("GetBuy", new { type = type,  id = buyDTO.CarPlate }, buyDTO);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         // POST: api/Buys
@@ -110,11 +145,6 @@ namespace ProjAPICarro.Controllers
         [HttpPost("newCar")]
         public async Task<ActionResult<Buy>> PostBuyNewCar(Buy buy)
         {
-            /*if (_context.Buys == null)
-            {
-                return Problem("Entity set 'ProjAPICarroContext.Buys'  is null.");
-            }*/
-
             _context.Buys.Add(buy);
             await _context.SaveChangesAsync();
 

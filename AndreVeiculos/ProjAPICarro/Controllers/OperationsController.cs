@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using ProjAPICarro.Data;
+using Services;
 
 namespace ProjAPICarro.Controllers
 {
@@ -22,32 +23,62 @@ namespace ProjAPICarro.Controllers
         }
 
         // GET: api/Operations
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Operation>>> GetOperations()
+        [HttpGet("{type}")]
+        public async Task<ActionResult<IEnumerable<Operation>>> GetOperations(string type)
         {
-          if (_context.Operations == null)
-          {
-              return NotFound();
-          }
-            return await _context.Operations.ToListAsync();
+            if(type == "framework")
+            {
+                if (_context.Operations == null)
+                {
+                    return NotFound();
+                }
+                return await _context.Operations.ToListAsync();
+            }
+            else if(type == "dapper")
+            {
+                OperationService operationService = new OperationService();
+                return operationService.GetAll();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         // GET: api/Operations/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Operation>> GetOperation(int id)
+        [HttpGet("{type}/{id}")]
+        public async Task<ActionResult<Operation>> GetOperation(string type, int id)
         {
-          if (_context.Operations == null)
-          {
-              return NotFound();
-          }
-            var operation = await _context.Operations.FindAsync(id);
-
-            if (operation == null)
+            if(type == "framework")
             {
-                return NotFound();
-            }
+                if (_context.Operations == null)
+                {
+                    return NotFound();
+                }
+                var operation = await _context.Operations.FindAsync(id);
 
-            return operation;
+                if (operation == null)
+                {
+                    return NotFound();
+                }
+
+                return operation;
+            }
+            else if(type == "dapper")
+            {
+                OperationService operationService = new OperationService();
+                var operation = operationService.Get(id);
+                if (operation == null)
+                {
+                    return NotFound();
+                }
+
+                return operation;
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         // PUT: api/Operations/5
@@ -83,17 +114,30 @@ namespace ProjAPICarro.Controllers
 
         // POST: api/Operations
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Operation>> PostOperation(Operation operation)
+        [HttpPost("{type}")]
+        public async Task<ActionResult<Operation>> PostOperation(string type, Operation operation)
         {
-          if (_context.Operations == null)
-          {
-              return Problem("Entity set 'ProjAPICarroContext.Operations'  is null.");
-          }
-            _context.Operations.Add(operation);
-            await _context.SaveChangesAsync();
+            if(type == "framework")
+            {
+                if (_context.Operations == null)
+                {
+                    return Problem("Entity set 'ProjAPICarroContext.Operations'  is null.");
+                }
+                _context.Operations.Add(operation);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetOperation", new { id = operation.Id }, operation);
+                return CreatedAtAction("GetOperation", new { id = operation.Id }, operation);
+            }
+            else if(type == "dapper")
+            {
+                OperationService operationService = new OperationService();
+                operationService.Insert(new List<Operation> { operation });
+                return CreatedAtAction("GetOperation", new { type = type, id = operation.Id }, operation);
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         // DELETE: api/Operations/5

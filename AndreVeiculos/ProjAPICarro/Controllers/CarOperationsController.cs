@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Models;
 using Models.DTO;
 using ProjAPICarro.Data;
+using Services;
 
 namespace ProjAPICarro.Controllers
 {
@@ -23,32 +25,63 @@ namespace ProjAPICarro.Controllers
         }
 
         // GET: api/CarOperations
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<CarOperation>>> GetCarOperations()
+        [HttpGet("{type}")]
+        public async Task<ActionResult<IEnumerable<CarOperation>>> GetCarOperations(string type)
         {
-          if (_context.CarOperations == null)
-          {
-              return NotFound();
-          }
-            return await _context.CarOperations.Include(c => c.Car).Include(o => o.Operation).ToListAsync();
+            if(type == "framework")
+            {
+                if (_context.CarOperations == null)
+                {
+                    return NotFound();
+                }
+                return await _context.CarOperations.Include(c => c.Car).Include(o => o.Operation).ToListAsync();
+            }
+            else if (type == "dapper")
+            {
+                CarOperationService carOperationService = new();
+                return carOperationService.GetAll();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         // GET: api/CarOperations/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<CarOperation>> GetCarOperation(int id)
+        [HttpGet("{type}/{id}")]
+        public async Task<ActionResult<CarOperation>> GetCarOperation(string type, int id)
         {
-          if (_context.CarOperations == null)
-          {
-              return NotFound();
-          }
-            var carOperation = await _context.CarOperations.Include(c => c.Car).Include(o => o.Operation).Where(cp => cp.Id == id).SingleOrDefaultAsync(c => c.Id == id);
-
-            if (carOperation == null)
+            if(type == "framework")
             {
-                return NotFound();
-            }
+                if (_context.CarOperations == null)
+                {
+                    return NotFound();
+                }
+                var carOperation = await _context.CarOperations.Include(c => c.Car).Include(o => o.Operation).FirstOrDefaultAsync(c => c.Id == id);
 
-            return carOperation;
+                if (carOperation == null)
+                {
+                    return NotFound();
+                }
+
+                return carOperation;
+            }
+            else if (type == "dapper")
+            {
+                CarOperationService carOperationService = new();
+                CarOperation carOperation = carOperationService.Get(id);
+
+                if (carOperation == null)
+                {
+                    return NotFound();
+                }
+
+                return carOperation;
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         // PUT: api/CarOperations/5
@@ -84,17 +117,36 @@ namespace ProjAPICarro.Controllers
 
         // POST: api/CarOperations
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<CarOperation>> PostCarOperation(CarOperationDTO carOperationDTO)
+        [HttpPost("{type}")]
+        public async Task<ActionResult<CarOperation>> PostCarOperation(string type, CarOperationDTO carOperationDTO)
         {
-            CarOperation carOp = new(carOperationDTO);
-            carOp.Car = await _context.Car.FindAsync(carOp.Car.Plate);
-            carOp.Operation = await _context.Operations.FindAsync(carOp.Operation.Id);
+            if (type == "framework")
+            {
+                CarOperation carOp = new(carOperationDTO);
+                carOp.Car = await _context.Car.FindAsync(carOp.Car.Plate);
+                carOp.Operation = await _context.Operations.FindAsync(carOp.Operation.Id);
 
-            _context.CarOperations.Add(carOp);
-            await _context.SaveChangesAsync();
+                _context.CarOperations.Add(carOp);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCarOperation", new { id = carOp.Id }, carOp);
+                return CreatedAtAction("GetCarOperation", new { id = carOp.Id }, carOp);
+            }
+            else if (type == "dapper")
+            {
+                CarOperationService carOperationService = new();
+                if (carOperationService.Insert(new CarService().Get(carOperationDTO.CarPlate), new OperationService().Get(carOperationDTO.operationId)))
+                {
+                    return CreatedAtAction("GetCarOperation", new { type = type, id = carOperationDTO.CarPlate }, carOperationDTO);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         // DELETE: api/CarOperations/5

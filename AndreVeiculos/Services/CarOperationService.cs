@@ -19,9 +19,16 @@ namespace Services
 
         public bool Insert(Car car, Operation operation)
         {
-            Object obj = new { CarPlate = car.Plate, OperationId = operation.Id, IsDone = false };
+            try
+            {
+                Object obj = new { CarPlate = car.Plate, OperationId = operation.Id, IsDone = false };
 
-            return _genericRepository.Insert(CarOperation.INSERT, obj);
+                return _genericRepository.Insert(CarOperation.INSERT, obj);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public List<CarOperation> GetAll()

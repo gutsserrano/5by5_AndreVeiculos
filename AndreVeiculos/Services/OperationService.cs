@@ -34,12 +34,12 @@ namespace Services
 
         public bool Update(int id, Operation operation)
         {
-            return _genericRepository.Update(Operation.UPDATE, operation);
+            return false;
         }
 
         public bool Delete(int id)
         {
-            return _genericRepository.Delete(Operation.DELETE, new { Id = id });
+            return false;
         }
     }
 }
