@@ -8,6 +8,8 @@ namespace Models
 {
     public abstract class Person
     {
+        public static readonly string INSERT = "INSERT INTO People (Document, Name, BirthDate, AddressId, Phone, Email) VALUES (@Document, @Name, @BirthDate, @AddressId, @Phone, @Email)";
+
         public string Document { get; set; }
         public string Name { get; set; }
         public DateTime BirthDate { get; set; }

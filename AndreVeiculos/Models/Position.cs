@@ -8,6 +8,9 @@ namespace Models
 {
     public class Position
     {
+        public static readonly string INSERT = "INSERT INTO Position (Description) VALUES (@Description)";
+        public static readonly string GETALL = "SELECT Id, Description FROM Position";
+
         public int Id { get; set; }
         public string Description { get; set; }
     }

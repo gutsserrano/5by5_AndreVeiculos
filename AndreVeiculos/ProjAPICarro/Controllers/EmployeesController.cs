@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using ProjAPICarro.Data;
+using Services;
 
 namespace ProjAPICarro.Controllers
 {
@@ -22,32 +23,61 @@ namespace ProjAPICarro.Controllers
         }
 
         // GET: api/Employees
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
+        [HttpGet("{type}")]
+        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees(string type)
         {
-          if (_context.Employees == null)
-          {
-              return NotFound();
-          }
-            return await _context.Employees.ToListAsync();
+            if(type == "framework")
+            {
+                if (_context.Employees == null)
+                {
+                    return NotFound();
+                }
+                return await _context.Employees.ToListAsync();
+            }
+            else if (type == "dapper")
+            {
+                EmployeeService employeeService = new();
+                return employeeService.GetAll();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         // GET: api/Employees/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Employee>> GetEmployee(string id)
+        [HttpGet("{type}/{id}")]
+        public async Task<ActionResult<Employee>> GetEmployee(string type, string id)
         {
-          if (_context.Employees == null)
-          {
-              return NotFound();
-          }
-            var employee = await _context.Employees.FindAsync(id);
-
-            if (employee == null)
+            if(type == "framework")
             {
-                return NotFound();
-            }
+                if (_context.Employees == null)
+                {
+                    return NotFound();
+                }
+                var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Document == id);
 
-            return employee;
+                if (employee == null)
+                {
+                    return NotFound();
+                }
+
+                return employee;
+            }
+            else if (type == "dapper")
+            {
+                EmployeeService employeeService = new();
+                var employee = employeeService.Get(id);
+                if (employee == null)
+                {
+                    return NotFound();
+                }
+                return employee;
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         // PUT: api/Employees/5
@@ -83,31 +113,32 @@ namespace ProjAPICarro.Controllers
 
         // POST: api/Employees
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Employee>> PostEmployee(Employee employee)
+        [HttpPost("{type}")]
+        public async Task<ActionResult<Employee>> PostEmployee(string type, Employee employee)
         {
-          if (_context.Employees == null)
-          {
-              return Problem("Entity set 'ProjAPICarroContext.Employees'  is null.");
-          }
-            _context.Employees.Add(employee);
-            try
+            if(type == "framework")
             {
+                _context.Employees.Add(employee);
                 await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetEmployee", new { id = employee.Document }, employee);
             }
-            catch (DbUpdateException)
+            else if (type == "dapper")
             {
-                if (EmployeeExists(employee.Document))
+                EmployeeService employeeService = new();
+                if (employeeService.Insert(employee))
                 {
-                    return Conflict();
+                    return CreatedAtAction("GetEmployee", new { type = type, id = employee.Document }, employee);
                 }
                 else
                 {
-                    throw;
+                    return BadRequest();
                 }
             }
-
-            return CreatedAtAction("GetEmployee", new { id = employee.Document }, employee);
+            else
+            {
+                return BadRequest();
+            }
         }
 
         // DELETE: api/Employees/5
