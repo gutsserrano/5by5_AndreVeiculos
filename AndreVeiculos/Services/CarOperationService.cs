@@ -65,17 +65,5 @@ namespace Services
         {
             return GetAll().Find(co => co.Id == id);
         }
-
-        public bool Update(int id, CarOperation carOperation)
-        {
-            //return _genericRepository.Update(CarOperation.UPDATE, carOperation);
-            return false;
-        }
-
-        public bool Delete(int id)
-        {
-            //return _genericRepository.Delete(CarOperation.DELETE, new { Id = id });
-            return false;
-        }
     }
 }

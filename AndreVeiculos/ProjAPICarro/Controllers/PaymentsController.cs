@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Models;
 using Models.DTO;
 using ProjAPICarro.Data;
+using Services;
 
 namespace ProjAPICarro.Controllers
 {
@@ -102,8 +104,6 @@ namespace ProjAPICarro.Controllers
         {
             Payment payment = new Payment(paymentDTO);
             payment.Pix.PixType = await _context.PixTypes.FindAsync(payment.Pix.PixType.Id);
-            //pix.PixType = await _context.PixTypes.FindAsync(pix.PixType.Id);
-
 
             _context.Payments.Add(payment);
             await _context.SaveChangesAsync();
@@ -113,28 +113,69 @@ namespace ProjAPICarro.Controllers
 
         // POST: api/Payments/bankSlip
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost("bankSlip")]
-        public async Task<ActionResult<Payment>> PostBankSlipPayment(BankSlipPaymentDTO bankSlipPaymentDTO)
+        [HttpPost("bankSlip/{type}")]
+        public async Task<ActionResult<Payment>> PostBankSlipPayment(string type, BankSlipPaymentDTO bankSlipPaymentDTO)
         {
-            /*if (_context.Payments == null)
+            if(type == "framework")
             {
-                return Problem("Entity set 'ProjAPICarroContext.Payments'  is null.");
-            }*/
+                Payment payment = new Payment(bankSlipPaymentDTO);
 
-            /* CarOperation carOp = new(carOperationDTO);
-            carOp.Car = await _context.Car.FindAsync(carOp.Car.Plate);
-            carOp.Operation = await _context.Operations.FindAsync(carOp.Operation.Id);*/
+                _context.Payments.Add(payment);
+                await _context.SaveChangesAsync();
 
-            Payment payment = new Payment(bankSlipPaymentDTO);
-
-
-            _context.Payments.Add(payment);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPayment", new { id = payment.Id }, payment);
+                return CreatedAtAction("GetPayment", new { id = payment.Id }, payment);
+            }
+            else if (type == "dapper")
+            {
+                PaymentService paymentService = new PaymentService();
+                Payment payment = new(bankSlipPaymentDTO);
+                if (paymentService.Insert(payment))
+                {
+                    return CreatedAtAction("GetPayment", new { /*type = type,*/ id = payment.Id }, payment);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
+        // POST: api/Payments/bankSlip
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost("card/{type}")]
+        public async Task<ActionResult<Payment>> PostCardPayment(string type, CardPaymentDTO cardPaymentDTO)
+        {
+            if(type == "framework")
+            {
+                Payment payment = new Payment(cardPaymentDTO);
 
+                _context.Payments.Add(payment);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetPayment", new { id = payment.Id }, payment);
+            }
+            else if (type == "dapper")
+            {
+                PaymentService paymentService = new PaymentService();
+                Payment payment = new(cardPaymentDTO);
+                if(paymentService.Insert(payment))
+                {
+                    return CreatedAtAction("GetPayment", new { /*type = type,*/ id = payment.Id }, payment);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
 
         // DELETE: api/Payments/5
         [HttpDelete("{id}")]
