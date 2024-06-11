@@ -31,15 +31,5 @@ namespace Services
         {
             return GetAll().Find(o => o.Id == id);
         }
-
-        public bool Update(int id, Operation operation)
-        {
-            return false;
-        }
-
-        public bool Delete(int id)
-        {
-            return false;
-        }
     }
 }
