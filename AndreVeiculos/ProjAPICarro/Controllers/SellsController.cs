@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Models.DTO;
+using NuGet.Protocol;
 using ProjAPICarro.Data;
+using Services;
 
 namespace ProjAPICarro.Controllers
 {
@@ -30,7 +32,14 @@ namespace ProjAPICarro.Controllers
           {
               return NotFound();
           }
-            return await _context.Sells.Include(c => c.Client).Include(e => e.Employee).Include(p => p.Payment).ToListAsync();
+            return await _context.Sells
+                .Include(c => c.Client)
+                .Include(e => e.Employee)
+                .Include(p => p.Payment)
+                .Include(pb => pb.Payment.BankSlip)
+                .Include(pc => pc.Payment.Card)
+                .Include(pp => pp.Payment.Pix)
+                .Include(ppt => ppt.Payment.Pix.PixType).ToListAsync();
         }
 
         // GET: api/Sells/5
@@ -41,7 +50,13 @@ namespace ProjAPICarro.Controllers
           {
               return NotFound();
           }
-            var sell = await _context.Sells.Include(c => c.Client).Include(e => e.Employee).Include(p => p.Payment).SingleOrDefaultAsync(s => s.Id == id);
+            var sell = await _context.Sells.Include(c => c.Client)
+                .Include(e => e.Employee)
+                .Include(p => p.Payment)
+                .Include(pb => pb.Payment.BankSlip)
+                .Include(pc => pc.Payment.Card)
+                .Include(pp => pp.Payment.Pix)
+                .Include(ppt => ppt.Payment.Pix.PixType).SingleOrDefaultAsync(s => s.Id == id);
 
             if (sell == null)
             {
@@ -84,26 +99,47 @@ namespace ProjAPICarro.Controllers
 
         // POST: api/Sells
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Sell>> PostSell(SellDTO sellDTO)
+        [HttpPost("{type}")]
+        public async Task<ActionResult<Sell>> PostSell(string type, SellDTO sellDTO)
         {
-            if (_context.Sells == null)
+            if(type == "framework")
             {
-                return Problem("Entity set 'ProjAPICarroContext.Sells'  is null.");
+                if (_context.Sells == null)
+                {
+                    return Problem("Entity set 'ProjAPICarroContext.Sells'  is null.");
+                }
+
+                Sell sell = new Sell(sellDTO);
+                sell.Car = await _context.Car.FindAsync(sell.Car.Plate);
+                sell.Client = await _context.Clients.FindAsync(sell.Client.Document);
+                sell.Employee = await _context.Employees.FindAsync(sell.Employee.Document);
+                sell.Payment = await _context.Payments.FindAsync(sell.Payment.Id);
+
+                sell.Car.Sold = true;
+
+                _context.Sells.Add(sell);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetSell", new { id = sell.Id }, sell);
             }
+            else if(type == "dapper")
+            {
+                Sell sell = new Sell(sellDTO);
 
-            Sell sell = new Sell(sellDTO);
-            sell.Car = await _context.Car.FindAsync(sell.Car.Plate);
-            sell.Client = await _context.Clients.FindAsync(sell.Client.Document);
-            sell.Employee = await _context.Employees.FindAsync(sell.Employee.Document);
-            sell.Payment = await _context.Payments.FindAsync(sell.Payment.Id);
-
-            sell.Car.Sold = true;
-
-            _context.Sells.Add(sell);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetSell", new { id = sell.Id }, sell);
+                SellService sellService = new();
+                if (sellService.Insert(sell, sell.Car, sell.Client, sell.Employee, sell.Payment))
+                {
+                    return CreatedAtAction("GetSell", new { /*type = type,*/ id = sellDTO.Id }, sellDTO);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         // DELETE: api/Sells/5

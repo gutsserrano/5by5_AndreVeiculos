@@ -11,7 +11,7 @@ namespace Models
     {
         public static readonly string INSERTCARD = "INSERT INTO Payments (CardNumber, PaymentDate) VALUES (@CardNumber, @PaymentDate)";
         public static readonly string INSERTBANKSLIP = "INSERT INTO Payments (BankSlipId, PaymentDate) VALUES (@BankSlipId, @PaymentDate)";
-        public static readonly string INSERTPIX = "INSERT INTO Payments (PaymentId, PixTypeId, PixKey) VALUES (@PaymentId, @PixTypeId, @PixKey)";
+        public static readonly string INSERTPIX = "INSERT INTO Payments (PixId, PaymentDate) VALUES (@PixId, @PaymentDate)";
 
 
         public int Id { get; set; }

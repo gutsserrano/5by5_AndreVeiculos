@@ -99,16 +99,48 @@ namespace ProjAPICarro.Controllers
 
         // POST: api/Payments/pix
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost("pix")]
-        public async Task<ActionResult<Payment>> PostPixPayment(PixPaymentDTO paymentDTO)
+        [HttpPost("pix/{type}")]
+        public async Task<ActionResult<Payment>> PostPixPayment(string type, PixPaymentDTO pixPaymentDTO)
         {
-            Payment payment = new Payment(paymentDTO);
-            payment.Pix.PixType = await _context.PixTypes.FindAsync(payment.Pix.PixType.Id);
+            if(type == "framework")
+            {
+                Pix pix = new Pix()
+                {
+                    PixKey = pixPaymentDTO.PixKey,
+                    PixType = new PixType() { Id = pixPaymentDTO.PixTypeId }
+                };
 
-            _context.Payments.Add(payment);
-            await _context.SaveChangesAsync();
+                pix.PixType = await _context.PixTypes.FindAsync(pix.PixType.Id);
+                _context.Pixes.Add(pix);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPayment", new { id = payment.Id }, payment);
+
+                Payment payment = new Payment(pixPaymentDTO);
+                payment.Pix = pix;
+                payment.Pix.PixType = pix.PixType;
+
+                _context.Payments.Add(payment);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetPayment", new { id = payment.Id }, payment);
+            }
+            else if (type == "dapper")
+            {
+                PaymentService paymentService = new PaymentService();
+                Payment payment = new(pixPaymentDTO);
+                if (paymentService.Insert(payment))
+                {
+                    return CreatedAtAction("GetPayment", new { /*type = type,*/ id = payment.Id }, payment);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         // POST: api/Payments/bankSlip

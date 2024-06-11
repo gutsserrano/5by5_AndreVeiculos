@@ -9,6 +9,8 @@ namespace Models
 {
     public class Sell
     {
+        public static readonly string INSERT = "INSERT INTO Sells (CarPlate, SellDate, SellPrice, ClientDocument, EmployeeDocument, PaymentId) VALUES (@CarPlate, @SellDate, @SellPrice, @ClientDocument, @EmployeeDocument, @PaymentId)";
+
         public int Id { get; set; }
         public Car Car { get; set; }
         public DateTime SellDate { get; set; }
